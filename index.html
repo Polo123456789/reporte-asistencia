@@ -10,32 +10,25 @@
 </head>
 
 <body>
-    <div class="container">
-        <div id="input-section">
-            <br/>
-            <input type="file" accept=".csv" id="file">
-        </div>
-        <br/>
-        <div id="total"></div>
-        <table class="table table-striped" id="result-table"></table>
+    <div class="container" id="app">
+        <input class="form-control m-3" type="file" accept=".csv" @change="generateAttendance">
+        <div class="m-3" v-if="total != 0">En total fueron {{ total }} asistentes</div>
+        <table class="table table-striped table-sm m-3" v-if="attendants.length != 0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad de asistentes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="attendant of attendants">
+                    <td>{{ attendant.name }}</td>
+                    <td>{{ attendant.amount }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <script src="index.js"></script>
+    <script src="index.js" type="module"></script>
 </body>
-
-<template id="table-header">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Cantidad de asistentes</th>
-        </tr>
-    </thead>
-</template>
-
-<template id="table-row">
-    <tr>
-        <td></td>
-        <td></td>
-    </tr>
-</template>
 
 </html>
