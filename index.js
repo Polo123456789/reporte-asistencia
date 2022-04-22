@@ -1,6 +1,6 @@
 import {
     createApp
-} from 'https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.es.js';
+} from 'https://unpkg.com/petite-vue?module';
 
 // Metadata lines in .csv file
 const irrelevant_lines = 6;
@@ -11,9 +11,14 @@ const attendants_field = 5;
 createApp({
     attendants: [],
     total: 0,
+    usingLastValues: false,
     calculateAttendance(text) {
         const lines = text.split("\n");
-        this.total = 0; // Reset if the value was already set
+
+        // Reset if the value was already set
+        this.total = 0;
+        this.attendants = [];
+        this.usingLastValues = false;
 
         lines.pop(); // Remove blank line at the end
 
@@ -38,6 +43,9 @@ createApp({
                 });
             }
         });
+
+        window.localStorage.setItem("lastAttendants", JSON.stringify(this.attendants));
+        window.localStorage.setItem("lastTotal", this.total);
     },
     generateAttendance(evt) {
         const file = evt.target.files[0];
@@ -48,5 +56,13 @@ createApp({
         });
         reader.readAsText(file);
     },
-
-}).mount("#app");
+    mounted() {
+        const lastAttendants = window.localStorage.getItem("lastAttendants");
+        if (lastAttendants) {
+            const lastTotal = window.localStorage.getItem("lastTotal");
+            this.attendants = JSON.parse(lastAttendants);
+            this.total = parseInt(lastTotal);
+            this.usingLastValues = true;
+        }
+    },
+}).mount();

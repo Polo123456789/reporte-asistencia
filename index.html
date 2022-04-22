@@ -10,9 +10,12 @@
 </head>
 
 <body>
-    <div class="container" id="app">
+    <div class="container" v-scope @vue:mounted="mounted">
         <input class="form-control m-3" type="file" accept=".csv" @change="generateAttendance">
-        <div class="m-3" v-if="total != 0">En total fueron {{ total }} asistentes</div>
+        <div class="m-3" v-if="total != 0">
+            <span v-if="usingLastValues">En la reunion pasada, total fueron {{ total }} asistentes</span>
+            <span v-else>En total fueron {{ total }} asistentes</span>
+        </div>
         <table class="table table-striped table-sm m-3" v-if="attendants.length != 0">
             <thead>
                 <tr>
