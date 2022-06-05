@@ -89,7 +89,7 @@ createApp({
                                         JSON.stringify(this.attendants));
             window.localStorage.setItem("lastTotal", this.total);
         } catch (e) {
-            this.error = e.toString();
+            this.error = e.stack
         }
     },
     generateAttendance(evt) {
