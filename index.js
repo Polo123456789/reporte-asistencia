@@ -9,38 +9,38 @@ const name_field = 1;
 const attendants_field = 5;
 
 const fallbackCopyTextToClipboard = (text) => {
-  const textArea = document.createElement("textarea");
-  textArea.value = text;
-  
-  // Avoid scrolling to bottom
-  textArea.style.top = "0";
-  textArea.style.left = "0";
-  textArea.style.position = "fixed";
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
 
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
+    // Avoid scrolling to bottom
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
 
-  try {
-    const successful = document.execCommand('copy');
-    const msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Fallback: Copying text command was ' + msg);
-  } catch (err) {
-    console.error('Fallback: Oops, unable to copy', err);
-  }
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
 
-  document.body.removeChild(textArea);
+    try {
+        const successful = document.execCommand('copy');
+        const msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Fallback: Copying text command was ' + msg);
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
 }
 const copyTextToClipboard = (text) => {
-  if (!navigator.clipboard) {
-    fallbackCopyTextToClipboard(text);
-    return;
-  }
-  navigator.clipboard.writeText(text).then(function() {
-    console.log('Async: Copying to clipboard was successful!');
-  }, function(err) {
-    console.error('Async: Could not copy text: ', err);
-  });
+    if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+    }
+    navigator.clipboard.writeText(text).then(function () {
+        console.log('Async: Copying to clipboard was successful!');
+    }, function (err) {
+        console.error('Async: Could not copy text: ', err);
+    });
 }
 
 createApp({
@@ -50,6 +50,8 @@ createApp({
     fileContents: "",
     error: "",
     showDebugDetails: false,
+    justShowLinkData: false,
+    linkData: "",
 
     calculateAttendance(text) {
         try {
@@ -86,7 +88,7 @@ createApp({
             });
 
             window.localStorage.setItem("lastAttendants",
-                                        JSON.stringify(this.attendants));
+                JSON.stringify(this.attendants));
             window.localStorage.setItem("lastTotal", this.total);
         } catch (e) {
             this.error = e.stack
@@ -107,7 +109,25 @@ createApp({
     copyDetails() {
         copyTextToClipboard(this.stringifyThis());
     },
+    generateShareLink() {
+        const data = {
+            attendants: this.attendants,
+            total: this.total,
+        };
+        const compresed = LZString.compressToEncodedURIComponent(JSON.stringify(data));
+        window.location.search += "&data=" + compresed;
+    },
     mounted() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("data")) {
+            this.justShowLinkData = true;
+            this.linkData = urlParams.get("data");
+            const data = JSON.parse(LZString.decompressFromEncodedURIComponent(this.linkData));
+            this.attendants = data.attendants;
+            this.total = data.total;
+            return;
+        }
+
         const lastAttendants = window.localStorage.getItem("lastAttendants");
         if (lastAttendants) {
             const lastTotal = window.localStorage.getItem("lastTotal");
