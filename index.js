@@ -115,7 +115,7 @@ createApp({
             total: this.total,
         };
         const compresed = LZString.compressToEncodedURIComponent(JSON.stringify(data));
-        window.location.search += "&data=" + compresed;
+        window.open("?data=" + compresed);
     },
     mounted() {
         const urlParams = new URLSearchParams(window.location.search);

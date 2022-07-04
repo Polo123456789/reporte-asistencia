@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -29,8 +29,8 @@
 <body>
     <div class="container" v-scope @vue:mounted="mounted">
         <input class="form-control m-3" type="file" accept=".csv" @change="generateAttendance" v-if="!justShowLinkData">
-        <div class="d-flex align-items-center">
-            <div class="m-3 flex-grow-1" v-if="total != 0">
+        <div class="d-flex align-items-center" v-if="total != 0">
+            <div class="m-3 flex-grow-1">
                 <span v-if="usingLastValues">En la reunión pasada, total fueron {{ total }} asistentes</span>
                 <span v-else>En total fueron {{ total }} asistentes</span>
             </div>
