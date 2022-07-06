@@ -28,9 +28,9 @@
 
 <body>
     <div class="container" v-scope @vue:mounted="mounted">
-        <input class="form-control m-3" type="file" accept=".csv" @change="generateAttendance" v-if="!justShowLinkData">
+        <input class="form-control my-3" type="file" accept=".csv" @change="generateAttendance" v-if="!justShowLinkData">
         <div class="d-flex align-items-center" v-if="total != 0">
-            <div class="m-3 flex-grow-1">
+            <div class="my-3 flex-grow-1">
                 <span v-if="usingLastValues">En la reunión pasada, total fueron {{ total }} asistentes</span>
                 <span v-else>En total fueron {{ total }} asistentes</span>
             </div>
@@ -38,7 +38,7 @@
                 Generar link
             </button>
         </div>
-        <div class="bg-danger bg-opacity-25 rounded m-3 p-2 fade-in" v-if="error">
+        <div class="bg-danger bg-opacity-25 rounded my-3 p-2 fade-in" v-if="error">
             <div class="d-flex align-items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="red" class="m-2"
                     viewBox="0 0 16 16">
@@ -64,7 +64,7 @@
             </div>
             <pre :hidden="!showDebugDetails" class="m-2 p-2">{{stringifyThis(2)}}</pre>
         </div>
-        <table class="table table-striped table-sm m-3" v-if="attendants.length != 0">
+        <table class="table table-striped table-sm my-3" v-if="attendants.length != 0">
             <thead>
                 <tr>
                     <th>Nombre</th>
