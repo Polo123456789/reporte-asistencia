@@ -43,6 +43,20 @@ const copyTextToClipboard = (text) => {
     });
 }
 
+const uniqueArrayBy = (array, key) => {
+    const seen = new Set();
+    return array.filter((i) => {
+        const k = key(i);
+        if (seen.has(k)) {
+            console.log("Duplicado: " + k);
+            return false;
+        } else {
+            seen.add(k);
+            return true;
+        }
+    });
+}
+
 createApp({
     attendants: [],
     total: 0,
@@ -78,14 +92,18 @@ createApp({
                 const words = attendants.split(" ");
 
                 if (words.length == 2) {
-                    const amount = parseInt(words[0]);
-                    this.total += amount;
                     this.attendants.push({
                         name: name,
                         amount: attendants
                     });
                 }
             });
+
+            this.attendants = uniqueArrayBy(this.attendants, JSON.stringify);
+            this.total = this.attendants.reduce((acc, val) => {
+                const amount = parseInt(val.amount.split(" ")[0])
+                return acc + amount;
+            }, 0);
 
             window.localStorage.setItem("lastAttendants",
                 JSON.stringify(this.attendants));
