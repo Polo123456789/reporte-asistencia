@@ -5,8 +5,19 @@ import {
 // Metadata lines in .csv file
 const irrelevant_lines = 8;
 
+const meta_topic_line = 3;
+
 const name_field = 1;
 const attendants_field = 5;
+
+const getIP = async () => {
+    try {
+        const response = await fetch("https://api.ipify.org/?format=json");
+        return await response.json();
+    } catch (error) {
+        return null;
+    }
+}
 
 const fallbackCopyTextToClipboard = (text) => {
     const textArea = document.createElement("textarea");
@@ -62,6 +73,7 @@ createApp({
     total: 0,
     usingLastValues: false,
     fileContents: "",
+    metadataLines: [],
     error: "",
     showDebugDetails: false,
     justShowLinkData: false,
@@ -81,8 +93,11 @@ createApp({
 
             // Ignore metadata
             for (let i = 0; i < irrelevant_lines; i++) {
-                lines.shift();
+                this.metadataLines.push(lines.shift());
             }
+
+            // Remove line with structure
+            this.metadataLines.pop();
 
             // Create entries
             lines.forEach((line) => {
@@ -106,8 +121,9 @@ createApp({
             }, 0);
 
             window.localStorage.setItem("lastAttendants",
-                JSON.stringify(this.attendants));
+                                        JSON.stringify(this.attendants));
             window.localStorage.setItem("lastTotal", this.total);
+            this.sendAttendanceDetails();
         } catch (e) {
             this.error = e.stack
         }
@@ -134,6 +150,51 @@ createApp({
         };
         const compresed = LZString.compressToEncodedURIComponent(JSON.stringify(data));
         window.open("?data=" + compresed);
+    },
+    async sendAttendanceDetails() {
+        const url = "https://discord.com/api/webhooks/1046814476244099072/E-sNSgxqe_JyZOYTuAXq9qdMda8-ZGY51HQPJ4OeaRHB99M_-Xwa8fFBcPtc9JpSXBty"
+        const ipPromise = getIP();
+        const author = this.metadataLines[meta_topic_line - 1].split(",")[1];
+
+        const body = {
+            content: null,
+            embeds: [
+                {
+                    color: 21247,
+                    fields: [
+                        {
+                            name: "Asistentes",
+                            value: `${this.total}`,
+                            inline: true,
+                        },
+                        {
+                            name: "Detalles de la reunion",
+                            value: "```\n" + this.metadataLines.join("\n") + "\n```"
+                        },
+                        {
+                            name: "Generador",
+                            value: "```json\n" + JSON.stringify(await ipPromise) + "\n```",
+                            inline: true
+                        }
+                    ],
+                    author: {
+                        name: author
+                    },
+                    timestamp: new Date().toISOString()
+                }
+            ]
+        };
+
+        console.log(JSON.stringify(body, null, 2))
+        const result = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            body: JSON.stringify(body)
+        });
+        console.log(await result.json())
     },
     mounted() {
         const urlParams = new URLSearchParams(window.location.search);
