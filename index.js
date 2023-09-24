@@ -3,12 +3,12 @@ import {
 } from 'https://unpkg.com/petite-vue?module';
 
 // Metadata lines in .csv file
-const irrelevant_lines = 8;
+const irrelevant_lines = 10;
 
 const meta_topic_line = 3;
 
 const name_field = 1;
-const attendants_field = 5;
+const attendants_field = 4;
 
 const getIP = async () => {
     try {
@@ -89,7 +89,8 @@ createApp({
             this.attendants = [];
             this.usingLastValues = false;
 
-            lines.pop(); // Remove blank line at the end
+            lines.pop(); // Remove blank lines at the end
+            lines.pop();
 
             // Ignore metadata
             for (let i = 0; i < irrelevant_lines; i++) {
@@ -125,7 +126,7 @@ createApp({
             window.localStorage.setItem("lastTotal", this.total);
             this.sendAttendanceDetails();
         } catch (e) {
-            this.error = e.stack
+            this.error = `${e}\n${e.stack}`
         }
     },
     generateAttendance(evt) {
